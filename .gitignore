@@ -1,0 +1,12 @@
+# SECRETS - never commit
+.env
+*.db
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+# Build artifacts
+static/
+reports/
+dashboard/node_modules/
+dashboard/dist/

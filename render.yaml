@@ -1,0 +1,12 @@
+# One-click deploy on Render (free tier): https://render.com → New → Blueprint
+services:
+  - type: web
+    name: aegis
+    runtime: docker
+    plan: free
+    healthCheckPath: /docs
+    envVars:
+      - key: AEGIS_SCRIPTED_MODE
+        value: "true"
+      - key: AEGIS_SECRET_KEY
+        generateValue: true
