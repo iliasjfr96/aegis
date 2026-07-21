@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Aegis Security Audit — {{ target_url }}</title>
+<style>
+  :root { --bg:#0d1117; --card:#161b22; --border:#30363d; --fg:#e6edf3; --muted:#8b949e;
+          --crit:#f85149; --high:#f0883e; --med:#d29922; --low:#3fb950; --accent:#58a6ff; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,'Segoe UI',Roboto,sans-serif; background:var(--bg);
+         color:var(--fg); margin:0; padding:2rem; line-height:1.55; }
+  .wrap { max-width:960px; margin:0 auto; }
+  header { border-bottom:1px solid var(--border); padding-bottom:1.5rem; margin-bottom:2rem; }
+  h1 { margin:0 0 .25rem; font-size:1.6rem; }
+  h1 .logo { color:var(--accent); }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .score-card { display:flex; gap:2rem; background:var(--card); border:1px solid var(--border);
+                border-radius:12px; padding:1.5rem; margin-bottom:2rem; align-items:center; }
+  .score-num { font-size:3.5rem; font-weight:800; }
+  .score-label { font-size:1.1rem; font-weight:700; padding:.3rem .9rem; border-radius:999px; }
+  .CRITICAL { color:var(--crit); } .HIGH { color:var(--high); }
+  .MEDIUM { color:var(--med); } .LOW { color:var(--low); }
+  .badge { display:inline-block; font-size:.75rem; font-weight:700; text-transform:uppercase;
+           padding:.15rem .6rem; border-radius:999px; border:1px solid currentColor; }
+  .critical { color:var(--crit); } .high { color:var(--high); }
+  .medium { color:var(--med); } .low, .info { color:var(--low); }
+  .stats { color:var(--muted); font-size:.9rem; }
+  table { width:100%; border-collapse:collapse; margin-bottom:2rem; }
+  th, td { text-align:left; padding:.6rem .8rem; border-bottom:1px solid var(--border); font-size:.9rem; }
+  th { color:var(--muted); text-transform:uppercase; font-size:.75rem; letter-spacing:.05em; }
+  .finding { background:var(--card); border:1px solid var(--border); border-radius:12px;
+             padding:1.25rem 1.5rem; margin-bottom:1.25rem; }
+  .finding h3 { margin:.25rem 0 .75rem; }
+  .finding h4 { color:var(--muted); font-size:.8rem; text-transform:uppercase;
+                letter-spacing:.05em; margin:1rem 0 .4rem; }
+  .transcript { background:#0d1117; border:1px solid var(--border); border-radius:8px;
+                padding:1rem; font-family:'SF Mono',Consolas,monospace; font-size:.82rem;
+                max-height:280px; overflow-y:auto; white-space:pre-wrap; }
+  .t-atk { color:var(--high); } .t-tgt { color:var(--fg); }
+  .remediation { background:rgba(63,185,80,.08); border-left:3px solid var(--low);
+                 padding:.75rem 1rem; border-radius:0 8px 8px 0; font-size:.9rem; }
+  footer { color:var(--muted); font-size:.8rem; text-align:center; margin-top:3rem;
+           border-top:1px solid var(--border); padding-top:1.5rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1><span class="logo">AEGIS</span> — LLM Security Audit Report</h1>
+  <div class="meta">Target: <strong>{{ target_url }}</strong> · {{ date }} · Authorized assessment</div>
+</header>
+
+<div class="score-card">
+  <div>
+    <div class="score-num {{ label }}">{{ score }}</div>
+    <div class="stats">risk score / 100</div>
+  </div>
+  <div>
+    <span class="score-label {{ label }}">{{ label }} RISK</span>
+    <div class="stats" style="margin-top:.75rem">
+      {{ findings|length }} confirmed finding(s) · {{ attempts_count }} attack(s) executed ·
+      {{ requests_used }} request(s) sent
+      {% if profile %}<br>Target profile: RAG {{ "yes" if profile.has_rag else "no" }} ·
+      tools {{ "yes" if profile.has_tools else "no" }} ·
+      guardrails: {{ profile.suspected_guardrails|join(", ") or "none detected" }}{% endif %}
+    </div>
+  </div>
+</div>
+
+<h2>OWASP LLM Top 10 Coverage</h2>
+<table>
+  <tr><th>Category</th><th>Name</th><th>Status</th></tr>
+  {% for row in owasp_matrix %}
+  <tr>
+    <td><strong>{{ row.id }}</strong></td>
+    <td>{{ row.name }}</td>
+    <td>{% if row.vulnerable %}<span class="badge {{ row.severity }}">vulnerable — {{ row.severity }}</span>
+        {% else %}<span class="badge low">no issue found</span>{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>Findings</h2>
+{% for f in findings %}
+<div class="finding">
+  <span class="badge {{ f.severity.value }}">{{ f.severity.value }}</span>
+  <span class="badge" style="color:var(--accent)">{{ f.owasp.value }} · {{ owasp_names[f.owasp.value] }}</span>
+  <h3>{{ f.title }}</h3>
+  <h4>Impact</h4>
+  <p>{{ f.impact }}</p>
+  <h4>Evidence (attack transcript)</h4>
+  <div class="transcript">{% for t in f.evidence %}<span class="{{ 't-atk' if t.role == 'attacker' else 't-tgt' }}">[{{ t.role|upper }}] {{ t.content }}</span>
+{% endfor %}</div>
+  <h4>Remediation</h4>
+  <div class="remediation">{{ f.remediation }}</div>
+</div>
+{% else %}
+<p>No vulnerabilities confirmed. The target resisted all attempted techniques.</p>
+{% endfor %}
+
+<footer>Generated by Aegis — automated multi-agent red team · Report ID: {{ date }}</footer>
+</div>
+</body>
+</html>
