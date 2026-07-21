@@ -1,0 +1,7 @@
+# Deploy on Railway: railway.app → New Project → Deploy from repo
+[build]
+builder = "dockerfile"
+
+[deploy]
+healthcheckPath = "/docs"
+restartPolicyType = "on_failure"
