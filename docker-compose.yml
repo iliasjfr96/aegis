@@ -1,0 +1,63 @@
+services:
+  target-l0:
+    build: { context: ., dockerfile: Dockerfile.python }
+    environment: [ "TARGET_LEVEL=0" ]
+    command: uvicorn aegis.targets.hr_assistant:app --host 0.0.0.0 --port 8100
+    ports: [ "8100:8100" ]
+
+  target-l1:
+    build: { context: ., dockerfile: Dockerfile.python }
+    environment: [ "TARGET_LEVEL=1" ]
+    command: uvicorn aegis.targets.hr_assistant:app --host 0.0.0.0 --port 8100
+    ports: [ "8101:8100" ]
+
+  target-l2:
+    build: { context: ., dockerfile: Dockerfile.python }
+    environment: [ "TARGET_LEVEL=2" ]
+    command: uvicorn aegis.targets.hr_assistant:app --host 0.0.0.0 --port 8100
+    ports: [ "8102:8100" ]
+
+  api:
+    build: { context: ., dockerfile: Dockerfile.python }
+    environment:
+      - AEGIS_LLM_PROVIDER=${AEGIS_LLM_PROVIDER:-ollama}
+      - AEGIS_ATTACK_MODEL=${AEGIS_ATTACK_MODEL:-llama3.1:8b}
+      - AEGIS_JUDGE_MODEL=${AEGIS_JUDGE_MODEL:-llama3.1:8b}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - AEGIS_TARGET_WHITELIST=http://target-l0:8100,http://target-l1:8100,http://target-l2:8100,http://localhost:8100,http://localhost:8101,http://localhost:8102
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY:-}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY:-}
+      - LANGFUSE_HOST=http://langfuse:3000
+    ports: [ "8200:8200" ]
+    depends_on: [ target-l0, target-l1, target-l2 ]
+
+  dashboard:
+    build: { context: ./dashboard, args: { VITE_AEGIS_API: http://localhost:8200 } }
+    ports: [ "5173:80" ]
+    depends_on: [ api ]
+
+  # --- Observability stack (Langfuse v2 self-hosted, free) ---
+  langfuse-db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=langfuse
+      - POSTGRES_PASSWORD=langfuse
+      - POSTGRES_DB=langfuse
+    volumes: [ "langfuse-db:/var/lib/postgresql/data" ]
+
+  langfuse:
+    image: langfuse/langfuse:2
+    ports: [ "3100:3000" ]
+    environment:
+      - DATABASE_URL=postgresql://langfuse:langfuse@langfuse-db:5432/langfuse
+      - NEXTAUTH_URL=http://localhost:3100
+      - NEXTAUTH_SECRET=aegis-dev-secret
+      - SALT=aegis-dev-salt
+      - ENCRYPTION_KEY=0000000000000000000000000000000000000000000000000000000000000000
+      - TELEMETRY_ENABLED=false
+    depends_on: [ langfuse-db ]
+
+volumes:
+  langfuse-db:
