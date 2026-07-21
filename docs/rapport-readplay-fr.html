@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Aegis Security Audit — https://readplay.fr</title>
+<style>
+  :root { --bg:#0d1117; --card:#161b22; --border:#30363d; --fg:#e6edf3; --muted:#8b949e;
+          --crit:#f85149; --high:#f0883e; --med:#d29922; --low:#3fb950; --accent:#58a6ff; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,'Segoe UI',Roboto,sans-serif; background:var(--bg);
+         color:var(--fg); margin:0; padding:2rem; line-height:1.55; }
+  .wrap { max-width:960px; margin:0 auto; }
+  header { border-bottom:1px solid var(--border); padding-bottom:1.5rem; margin-bottom:2rem; }
+  h1 { margin:0 0 .25rem; font-size:1.6rem; }
+  h1 .logo { color:var(--accent); }
+  .meta { color:var(--muted); font-size:.9rem; }
+  .score-card { display:flex; gap:2rem; background:var(--card); border:1px solid var(--border);
+                border-radius:12px; padding:1.5rem; margin-bottom:2rem; align-items:center; }
+  .score-num { font-size:3.5rem; font-weight:800; }
+  .score-label { font-size:1.1rem; font-weight:700; padding:.3rem .9rem; border-radius:999px; }
+  .CRITICAL { color:var(--crit); } .HIGH { color:var(--high); }
+  .MEDIUM { color:var(--med); } .LOW { color:var(--low); }
+  .badge { display:inline-block; font-size:.75rem; font-weight:700; text-transform:uppercase;
+           padding:.15rem .6rem; border-radius:999px; border:1px solid currentColor; }
+  .critical { color:var(--crit); } .high { color:var(--high); }
+  .medium { color:var(--med); } .low, .info { color:var(--low); }
+  .stats { color:var(--muted); font-size:.9rem; }
+  table { width:100%; border-collapse:collapse; margin-bottom:2rem; }
+  th, td { text-align:left; padding:.6rem .8rem; border-bottom:1px solid var(--border); font-size:.9rem; }
+  th { color:var(--muted); text-transform:uppercase; font-size:.75rem; letter-spacing:.05em; }
+  .finding { background:var(--card); border:1px solid var(--border); border-radius:12px;
+             padding:1.25rem 1.5rem; margin-bottom:1.25rem; }
+  .finding h3 { margin:.25rem 0 .75rem; }
+  .finding h4 { color:var(--muted); font-size:.8rem; text-transform:uppercase;
+                letter-spacing:.05em; margin:1rem 0 .4rem; }
+  .transcript { background:#0d1117; border:1px solid var(--border); border-radius:8px;
+                padding:1rem; font-family:'SF Mono',Consolas,monospace; font-size:.82rem;
+                max-height:280px; overflow-y:auto; white-space:pre-wrap; }
+  .t-atk { color:var(--high); } .t-tgt { color:var(--fg); }
+  .remediation { background:rgba(63,185,80,.08); border-left:3px solid var(--low);
+                 padding:.75rem 1rem; border-radius:0 8px 8px 0; font-size:.9rem; }
+  footer { color:var(--muted); font-size:.8rem; text-align:center; margin-top:3rem;
+           border-top:1px solid var(--border); padding-top:1.5rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1><span class="logo">AEGIS</span> — LLM Security Audit Report</h1>
+  <div class="meta">Target: <strong>https://readplay.fr</strong> · 2026-07-21 01:44 UTC · Authorized assessment</div>
+</header>
+
+<div class="score-card">
+  <div>
+    <div class="score-num LOW">0</div>
+    <div class="stats">risk score / 100</div>
+  </div>
+  <div>
+    <span class="score-label LOW">LOW RISK</span>
+    <div class="stats" style="margin-top:.75rem">
+      1 confirmed finding(s) · 6 attack(s) executed ·
+      14 request(s) sent
+      
+    </div>
+  </div>
+</div>
+
+<h2>OWASP LLM Top 10 Coverage</h2>
+<table>
+  <tr><th>Category</th><th>Name</th><th>Status</th></tr>
+  
+  <tr>
+    <td><strong>LLM01</strong></td>
+    <td>Prompt Injection</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>LLM02</strong></td>
+    <td>Sensitive Information Disclosure</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>LLM06</strong></td>
+    <td>Excessive Agency</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>LLM07</strong></td>
+    <td>System Prompt Leakage</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>LLM08</strong></td>
+    <td>Vector and Embedding Weaknesses</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>WEB-HEADERS</strong></td>
+    <td>Security Headers</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>WEB-CORS</strong></td>
+    <td>CORS Misconfiguration</td>
+    <td><span class="badge info">vulnerable — info</span>
+        </td>
+  </tr>
+  
+  <tr>
+    <td><strong>WEB-EXPOSED</strong></td>
+    <td>Exposed Sensitive Files</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>WEB-COOKIES</strong></td>
+    <td>Insecure Cookies</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>WEB-JWT</strong></td>
+    <td>JWT Weaknesses</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>WS-AUTH</strong></td>
+    <td>WebSocket Missing Auth</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>WS-INJECTION</strong></td>
+    <td>WebSocket Input Handling</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>WS-RATELIMIT</strong></td>
+    <td>WebSocket Rate Limiting</td>
+    <td><span class="badge low">no issue found</span></td>
+  </tr>
+  
+</table>
+
+<h2>Findings</h2>
+
+<div class="finding">
+  <span class="badge info">info</span>
+  <span class="badge" style="color:var(--accent)">WEB-CORS · CORS Misconfiguration</span>
+  <h3>CORS: wildcard origin (no credentials)</h3>
+  <h4>Impact</h4>
+  <p>Acceptable for public endpoints; ensure no authenticated route is exposed</p>
+  <h4>Evidence (attack transcript)</h4>
+  <div class="transcript"><span class="t-atk">[ATTACKER] OPTIONS https://readplay.fr Origin:https://evil-aegis-test.com</span>
+<span class="t-tgt">[TARGET] allow-origin:* without allow-credentials</span>
+</div>
+  <h4>Remediation</h4>
+  <div class="remediation">Use a strict origin allowlist; never combine wildcard origins with credentials; reject reflected arbitrary origins.</div>
+</div>
+
+
+<footer>Generated by Aegis — automated multi-agent red team · Report ID: 2026-07-21 01:44 UTC</footer>
+</div>
+</body>
+</html>
