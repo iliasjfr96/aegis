@@ -1,0 +1,18 @@
+MIT License (with authorized-use clause)
+
+Copyright (c) 2026 Aegis contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, subject to the following conditions:
+
+1. The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+
+2. AUTHORIZED USE ONLY: the security-testing features of the Software may only
+   be used against systems you own or for which you hold explicit written
+   authorization. Any other use is prohibited and may violate applicable law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
